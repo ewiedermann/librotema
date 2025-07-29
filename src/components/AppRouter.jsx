@@ -1,42 +1,38 @@
-// src/router/AppRouter.jsx
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Login from '../components/Login';
-import Dashboard from '../components/Dashboard';
-import AltaProfesor from '../components/AltaProfesor';
-import AltaPreceptor from '../components/AltaPreceptor';
-import AltaMateria from '../components/AltaMateria';
-import AltaCurso from '../components/AltaCurso';
-import AltaTurno from '../components/AltaTurno';
-import AltaHorario from '../components/AltaHorario';
-import AltaTema from '../components/AltaTema';
-import { useAuth } from '../hooks/useAuth';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import AltaProfesor from './AltaProfesor';
+import AltaPreceptor from './AltaPreceptor';
+import AltaMateria from './AltaMateria';
+import AltaCurso from './AltaCurso';
+import AltaHorario from './AltaHorario';
+import AltaTurno from './AltaTurno';
+import AltaTema from './AltaTema';
+import Home from './Home'; // Pantalla principal del profesor con materias del día
 
-const AppRouter = () => {
-  const { user } = useAuth();
+const AppRouter = ({ user }) => {
+  const isAdmin = user?.rol === 'admin';
+  const isProfesor = user?.rol === 'profesor' || isAdmin;
 
   return (
-    <Router>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        
-        {user ? (
-          <>
-            <Route path="/" element={<Dashboard />} />
-            {user.rol === 'admin' && <Route path="/alta-profesor" element={<AltaProfesor />} />}
-            {user.rol === 'admin' && <Route path="/alta-preceptor" element={<AltaPreceptor />} />}
-            {user.rol === 'admin' && <Route path="/alta-materia" element={<AltaMateria />} />}
-            {user.rol === 'admin' && <Route path="/alta-curso" element={<AltaCurso />} />}
-            {user.rol === 'admin' && <Route path="/alta-turno" element={<AltaTurno />} />}
-            {user.rol === 'admin' && <Route path="/alta-horario" element={<AltaHorario />} />}
-            {(user.rol === 'admin' || user.rol === 'profesor') && <Route path="/alta-tema" element={<AltaTema />} />}
-          </>
-        ) : (
-          <Route path="*" element={<Navigate to="/login" replace />} />
-        )}
-      </Routes>
-    </Router>
+    <Routes>
+      <Route path="/" element={<Home user={user} />} />
+      {isAdmin && (
+        <>
+          <Route path="/alta-profesor" element={<AltaProfesor />} />
+          <Route path="/alta-preceptor" element={<AltaPreceptor />} />
+          <Route path="/alta-materia" element={<AltaMateria />} />
+          <Route path="/alta-curso" element={<AltaCurso />} />
+          <Route path="/alta-horario" element={<AltaHorario />} />
+          <Route path="/alta-turno" element={<AltaTurno />} />
+        </>
+      )}
+      {isProfesor && (
+        <Route path="/alta-tema" element={<AltaTema user={user} />} />
+      )}
+      <Route path="*" element={<Navigate to="/" />} />
+    </Routes>
   );
 };
 
 export default AppRouter;
+
