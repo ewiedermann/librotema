@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Box, Button, Paper, TextField, Typography, Alert } from '@mui/material';
 import { collection, addDoc } from 'firebase/firestore';
-import { db } from '../firebase';
-import { getCurrentUser } from '../hooks/useAuth';
+import { db } from '../firebase/firebase';
+import { useAuth } from '../hooks/useAuth';
 
 const AltaCurso = () => {
-  const user = getCurrentUser();
+  const { usuario } = useAuth(); // ahora es un hook
 
   const [curso, setCurso] = useState({
     nombre: '',
@@ -34,7 +34,7 @@ const AltaCurso = () => {
     }
   };
 
-  if (!user || user.rol !== 'admin') {
+  if (!usuario || usuario.rol !== 'admin') {
     return <Alert severity="error">Solo los administradores pueden registrar cursos.</Alert>;
   }
 

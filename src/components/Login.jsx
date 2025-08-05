@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
-import { db } from '../firebase/firebaseConfig';
+import { db } from '../firebase/firebase';
 import { useNavigate } from 'react-router-dom';
 import {
   Box, Button, Container, TextField, Typography, Paper, Alert
@@ -11,18 +11,40 @@ const Login = ({ setUser }) => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleLogin = async () => {
-    const querySnapshot = await getDocs(collection(db, 'usuarios'));
-    const user = querySnapshot.docs.find(doc =>
-      doc.data().usuario === credenciales.usuario &&
-      doc.data().contrasena === credenciales.contrasena
-    );
+  useEffect(() => {
+    const storedUser = localStorage.getItem('usuario');
+    if (storedUser) {
+      // Si hay usuario en localStorage, redirigir a la página principal
+      navigate('/login', { replace: true }); // replace elimina la página anterior del historial
+    }
+  }, []);
 
-    if (user) {
-      setUser({ ...user.data(), id: user.id });
-      navigate('/');
-    } else {
-      setError('Credenciales incorrectas');
+  const handleLogin = async () => {
+    setError('');
+    try {
+      const querySnapshot = await getDocs(collection(db, 'usuarios'));
+      const userDoc = querySnapshot.docs.find(doc =>
+        doc.data().usuario === credenciales.usuario &&
+        doc.data().contrasena === credenciales.contrasena
+      );
+
+      if (userDoc) {
+        //Array[10]= 
+        const userData = { ...userDoc.data(), id: userDoc.id };
+
+        if (!userData.rol) {
+          setError('Tu cuenta no tiene un rol asignado. Contactá al administrador.');
+          return;
+        }
+
+        setUser(userData);
+        navigate('/');
+      } else {
+        setError('Credenciales incorrectas');
+      }
+    } catch (err) {
+      console.error('Error al autenticar:', err);
+      setError('Error al conectarse. Intente de nuevo más tarde.');
     }
   };
 
@@ -47,7 +69,9 @@ const Login = ({ setUser }) => {
           onChange={(e) => setCredenciales({ ...credenciales, contrasena: e.target.value })}
         />
         <Box mt={2}>
-          <Button variant="contained" color="primary" onClick={handleLogin}>Ingresar</Button>
+          <Button variant="contained" color="primary" onClick={handleLogin}>
+            Ingresar
+          </Button>
         </Box>
       </Paper>
     </Container>

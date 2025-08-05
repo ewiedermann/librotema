@@ -3,23 +3,24 @@ import {
   Box, Button, Paper, Typography, TextField, MenuItem, Alert
 } from '@mui/material';
 import { collection, addDoc } from 'firebase/firestore';
-import { db } from '../firebase';
-import { getCurrentUser } from '../hooks/useAuth';
+import { db } from '../firebase/firebase';
+import { useAuth } from '../hooks/useAuth';
 
 const dias = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
+
 const bloques = [
   "18:00 - 18:40",
   "18:40 - 19:20",
   "19:20 - 19:30 (Recreo)",
-  "19:30 - 20:00",
-  "20:00 - 20:40",
-  "20:40 - 20:50 (Recreo)",
-  "20:50 - 21:20",
-  "21:20 - 22:00"
+  "19:30 - 20:10",
+  "20:10 - 20:50",
+  "20:50 - 21:00 (Recreo)",
+  "21:00 - 21:30",
+  "21:30 - 22:00"
 ];
 
 const AltaHorario = () => {
-  const user = getCurrentUser();
+  const { usuario } = useAuth(); // Hook correcto
 
   const [horario, setHorario] = useState({
     curso: '',
@@ -50,7 +51,7 @@ const AltaHorario = () => {
     }
   };
 
-  if (!user || user.rol !== 'admin') {
+  if (!usuario || usuario.rol !== 'admin') {
     return <Alert severity="error">Solo los administradores pueden registrar horarios.</Alert>;
   }
 
@@ -65,6 +66,7 @@ const AltaHorario = () => {
           value={horario.curso}
           onChange={handleChange}
           margin="normal"
+          required
         />
         <TextField
           fullWidth
@@ -73,6 +75,7 @@ const AltaHorario = () => {
           value={horario.asignatura}
           onChange={handleChange}
           margin="normal"
+          required
         />
         <TextField
           fullWidth
@@ -81,6 +84,7 @@ const AltaHorario = () => {
           value={horario.profesor}
           onChange={handleChange}
           margin="normal"
+          required
         />
         <TextField
           select
@@ -90,6 +94,7 @@ const AltaHorario = () => {
           value={horario.dia}
           onChange={handleChange}
           margin="normal"
+          required
         >
           {dias.map((d) => (
             <MenuItem key={d} value={d}>{d}</MenuItem>
@@ -103,6 +108,7 @@ const AltaHorario = () => {
           value={horario.bloque}
           onChange={handleChange}
           margin="normal"
+          required
         >
           {bloques.map((b) => (
             <MenuItem key={b} value={b}>{b}</MenuItem>

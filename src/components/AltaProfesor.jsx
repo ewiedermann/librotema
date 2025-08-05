@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { TextField, Button, Typography, Grid, Paper } from '@mui/material';
 import { collection, addDoc } from 'firebase/firestore';
-import { db } from '../firebase';
+import { db } from '../firebase/firebase';
 import { crearUsuario } from '../hooks/useUsuarios';
 
 const AltaProfesor = () => {

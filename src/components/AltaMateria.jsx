@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Box, Button, Paper, TextField, Typography, Alert } from '@mui/material';
 import { collection, addDoc } from 'firebase/firestore';
-import { db } from '../firebase';
-import { getCurrentUser } from '../hooks/useAuth';
+import { db } from '../firebase/firebase';
+import { useAuth } from '../hooks/useAuth'; // Usamos el hook personalizado
 
 const AltaMateria = () => {
-  const user = getCurrentUser();
+  const { usuario } = useAuth(); // Obtenemos el usuario desde el hook
 
   const [materia, setMateria] = useState({
     nombre: '',
@@ -35,7 +35,7 @@ const AltaMateria = () => {
     }
   };
 
-  if (!user || user.rol !== 'admin') {
+  if (!usuario || usuario.rol !== 'admin') {
     return <Alert severity="error">Solo los administradores pueden registrar materias.</Alert>;
   }
 

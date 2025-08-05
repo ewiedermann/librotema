@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 import { TextField, Button, Paper, Typography, Alert } from '@mui/material';
 import { collection, addDoc } from 'firebase/firestore';
-import { db } from '../firebase';
-import { getCurrentUser } from '../hooks/useAuth';
+import { db } from '../firebase/firebase';
+import { useAuth } from '../hooks/useAuth';
 
 const AltaTurno = () => {
-  const user = getCurrentUser();
+  const { currentUser: user } = useAuth();
   const [nombre, setNombre] = useState('');
   const [mensaje, setMensaje] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!user || user.role !== 'admin') {
+    if (!user || user.rol !== 'admin') {
       setMensaje('Solo los administradores pueden registrar turnos.');
       return;
     }
