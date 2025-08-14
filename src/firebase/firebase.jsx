@@ -1,11 +1,15 @@
-// Import the functions you need from the SDKs you need
+// Importar SDKs de Firebase
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import {
+  getAuth,
+  GoogleAuthProvider,
+  setPersistence,
+  browserLocalPersistence
+} from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// Configuración de tu proyecto Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBtrGBwQvD8AHP5T1R1XAoVc81dGwBTdfQ",
   authDomain: "librodetema-332a2.firebaseapp.com",
@@ -16,8 +20,20 @@ const firebaseConfig = {
   measurementId: "G-NQ3JBQD0F5"
 };
 
-// Initialize Firebase
-const db = initializeApp(firebaseConfig);
-const analytics = getAnalytics(db);
+// Inicializar Firebase
+const app = initializeApp(firebaseConfig);
 
-export { db };
+// Analytics (opcional)
+const analytics = getAnalytics(app);
+
+// Exportar Firestore
+export const db = getFirestore(app);
+
+// Exportar Auth
+export const auth = getAuth(app);
+
+// Persistencia: mantiene sesión activa
+setPersistence(auth, browserLocalPersistence);
+
+// Proveedor de Google
+export const googleProvider = new GoogleAuthProvider();
